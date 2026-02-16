@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // 1. Added useNavigate here
 import axios from 'axios';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // 2. Initialize the navigate function
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
-      alert("Welcome back!");
+      
+      // Store the token for session management
       localStorage.setItem('token', res.data.token);
+      
+      alert("Welcome back!"); // The alert in your screenshot
+      
+      // 3. This line moves the user to the quiz questions
+      navigate('/quiz'); 
+      
     } catch (err) {
       alert("Login failed. Please check your credentials.");
     }

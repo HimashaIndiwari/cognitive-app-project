@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // Use the model we created
+const User = require('../domain/User'); // Use the model we created
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // REGISTRATION ROUTE
 router.post('/register', async (req, res) => {
+  console.log('Register route hit:', req.body);
   try {
     const { name, email, password } = req.body;
     // Details are saved to MongoDB here
