@@ -25,69 +25,113 @@ exports.saveQuizResult = async (req, res) => {
 };
 
 // Handle Memory Quiz Submission
+// Handle Memory & Mobility Quiz Submission
 exports.submitMemoryQuiz = async (req, res) => {
   try {
-    const { answer } = req.body;
+    const { memoryAnswer, mobilityAnswer } = req.body;
     const userId = req.user.id;
 
+    // --- MEMORY LOGIC ---
     let memoryLevel = 1;
-    let plan = {};
+    let memoryTitle = "High Support Needed";
+    let memoryTasks = [];
 
-    // Determine Level based on Answer
-    // A -> Level 3 (Independent)
-    // B -> Level 2 (Assisted)
-    // C or D -> Level 1 (Supported)
-    if (answer === 'A') {
+    if (memoryAnswer === 'A') {
       memoryLevel = 3;
-      plan = {
-        title: "Independent Daily Check",
-        description: "You are doing great! engaging in these activities will help maintain your cognitive health.",
-        tasks: [
-          "Complete a 15-minute morning walk",
-          "Read a chapter of a book",
-          "Solve a crossword puzzle",
-          "Prepare a healthy meal"
-        ],
-        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-      };
-    } else if (answer === 'B') {
+      memoryTitle = "Independent Mind";
+      memoryTasks = [
+        "Complete a 15-minute morning walk",
+        "Read a chapter of a book",
+        "Solve a crossword puzzle"
+      ];
+    } else if (memoryAnswer === 'B') {
       memoryLevel = 2;
-      plan = {
-        title: "Assisted Daily Check",
-        description: "A little help goes a long way. Let's stick to a routine.",
-        tasks: [
-          "Review calendar for appointments",
-          "Organize medications for the day",
-          "Light stretching exercises",
-          "Call a friend or family member"
-        ],
-        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-      };
+      memoryTitle = "Mild Cognitive Decline";
+      memoryTasks = [
+        "Review calendar for appointments",
+        "Organize medications for the day",
+        "Call a friend or family member"
+      ];
     } else {
-      // Covers 'C' and 'D'
+      // C or D
       memoryLevel = 1;
-      plan = {
-        title: "Supported Daily Routine",
-        description: "We are here to support you. Focus on simple, guided tasks.",
-        tasks: [
-          "Follow guided morning routine",
-          "Assisted medication intake",
-          "Listen to calming music",
-          "Engage in guided conversation"
-        ],
-        date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-      };
+      memoryTitle = "High Support Needed";
+      memoryTasks = [
+        "Listen to calming music",
+        "Engage in guided conversation",
+        "Look at family photo album"
+      ];
     }
 
-    // Update User's Memory Level
+    // --- MOBILITY LOGIC ---
+    let mobilityLevel = 1;
+    let mobilityTitle = "Limited Mobility";
+    let mobilityTasks = [];
+
+    if (mobilityAnswer === 'A') {
+      mobilityLevel = 3;
+      mobilityTitle = "Strong Mobility";
+      mobilityTasks = [
+        "Activity: 30-Minute Outdoor Walk",
+        "Action: Walk at a comfortable pace for 30 minutes",
+        "Purpose: Improve circulation, Oxygen to brain, Support cognitive function"
+      ];
+    } else if (mobilityAnswer === 'B') {
+      mobilityLevel = 2;
+      mobilityTitle = "Moderate Mobility";
+      mobilityTasks = [
+        "Activity: 10-Minute Walk + 5-Minute Rest (Repeat Once)",
+        "Action: Walk 10 min → Rest 5 min → Walk again",
+        "Purpose: Maintain stamina, Avoid overexertion, Improve strength"
+      ];
+    } else if (mobilityAnswer === 'C') {
+      mobilityLevel = 1;
+      mobilityTitle = "Low Mobility";
+      mobilityTasks = [
+        "Activity: Indoor Walking Between Rooms (5–10 Mins)",
+        "Action: Slow walking inside house (living room to kitchen)",
+        "Purpose: Prevent stiffness, Safe movement, Light activity"
+      ];
+    } else {
+      // D
+      mobilityLevel = 1;
+      mobilityTitle = "High Support Level – Limited Mobility";
+      mobilityTasks = [
+        "Activity: Seated Chair Yoga (5–10 Minutes)",
+        "Action: Simple movements: Arm raises, Neck rotations, Deep breathing",
+        "Purpose: Improve flexibility, Reduce stiffness, Promote relaxation"
+      ];
+    }
+
+    // Construct the Combined Plan
+    const plan = {
+      date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+      memory: {
+        level: memoryLevel,
+        title: `Daily Orientation - Level ${memoryLevel}`,
+        subtitle: memoryTitle,
+        tasks: memoryTasks,
+        color: "bg-blue-900"
+      },
+      mobility: {
+        level: mobilityLevel,
+        title: "Daily Fitness & Health Hub",
+        subtitle: `Support Level: ${mobilityTitle}`,
+        tasks: mobilityTasks,
+        color: "bg-slate-900"
+      }
+    };
+
+    // Update User's Levels
     await User.findByIdAndUpdate(userId, {
-      'levels.memory': memoryLevel
+      'levels.memory': memoryLevel,
+      'levels.mobility': mobilityLevel
     });
 
-    res.status(200).json({ success: true, level: memoryLevel, plan });
+    res.status(200).json({ success: true, plan });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server failed to process memory quiz" });
+    res.status(500).json({ error: "Server failed to process assessment" });
   }
 };
