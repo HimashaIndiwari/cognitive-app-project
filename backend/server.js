@@ -16,6 +16,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use('/api/auth', require('./api/authRotes'));
+app.use('/api/quiz', require('./api/quizRoutes'));
 
 app.get('/', (req, res) => {
   res.send('Cognitive App Backend is Running! (Patched)');
