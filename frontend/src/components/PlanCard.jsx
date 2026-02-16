@@ -95,6 +95,32 @@ const PlanCard = ({ plan, onConfirm }) => {
                 </div>
             </div>
 
+            {/* ATTENTION CARD */}
+            <div className="bg-teal-900 text-white rounded-xl shadow-lg overflow-hidden p-6 relative">
+                {/* Decorative Eye/Focus Icon */}
+                <div className="absolute top-4 right-4 text-teal-500 opacity-30">
+                    <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                    </svg>
+                </div>
+
+                <h2 className="text-2xl font-bold mb-1">{plan.attention?.title || "Daily Attention Builder"}</h2>
+                <h3 className="text-lg text-teal-300 font-semibold mb-6">{plan.attention?.subtitle}</h3>
+
+                <div className="bg-teal-50 text-gray-900 rounded-lg p-4 mb-4 border border-teal-100">
+                    <h4 className="font-bold text-gray-800 mb-2">Focus Exercises</h4>
+                    <ul className="space-y-2">
+                        {plan.attention?.tasks.map((task, index) => (
+                            <li key={index} className="flex items-center">
+                                <span className="h-2 w-2 bg-teal-500 rounded-full mr-3"></span>
+                                <span className="text-sm font-medium">{task}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
             <div className="mt-8">
                 <button
                     onClick={onConfirm}

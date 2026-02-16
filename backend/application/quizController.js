@@ -144,6 +144,46 @@ exports.submitMemoryQuiz = async (req, res) => {
       ];
     }
 
+    // --- ATTENTION LOGIC ---
+    const { attentionAnswer } = req.body;
+    let attentionLevel = 1;
+    let attentionTitle = "Attention Support Needed";
+    let attentionTasks = [];
+
+    if (attentionAnswer === 'A') { // > 30 mins
+      attentionLevel = 3;
+      attentionTitle = "High Focus";
+      attentionTasks = [
+        "Activity: Deep Reading Session (20-30 mins)",
+        "Action: Read a challenging book or article without interruption",
+        "Purpose: Maintain sustained attention span"
+      ];
+    } else if (attentionAnswer === 'B') { // 15-20 mins
+      attentionLevel = 2;
+      attentionTitle = "Moderate Focus";
+      attentionTasks = [
+        "Activity: Short Reading Intervals (15 mins)",
+        "Action: Read for 15 minutes, then summarize what you read",
+        "Purpose: Build focus stamina"
+      ];
+    } else if (attentionAnswer === 'C') { // < 5 mins
+      attentionLevel = 1;
+      attentionTitle = "Low Focus Duration";
+      attentionTasks = [
+        "Activity: 5-Minute Focus Drill",
+        "Action: Focus on one object or picture for 5 minutes, describing details",
+        "Purpose: Train basic attention muscle"
+      ];
+    } else { // D - Too difficult
+      attentionLevel = 1;
+      attentionTitle = "High Support – Attention";
+      attentionTasks = [
+        "Activity: Guided Listening",
+        "Action: Listen to a short audio story (3-5 mins) and answer 1 question",
+        "Purpose: Auditory attention practice"
+      ];
+    }
+
     // Construct the Combined Plan
     const plan = {
       date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
@@ -167,6 +207,13 @@ exports.submitMemoryQuiz = async (req, res) => {
         subtitle: `Social Level: ${socialTitle}`,
         tasks: socialTasks,
         color: "bg-purple-900"
+      },
+      attention: {
+        level: attentionLevel,
+        title: "Daily Attention Builder",
+        subtitle: `Focus Level: ${attentionTitle}`,
+        tasks: attentionTasks,
+        color: "bg-teal-900"
       }
     };
 
@@ -174,7 +221,8 @@ exports.submitMemoryQuiz = async (req, res) => {
     await User.findByIdAndUpdate(userId, {
       'levels.memory': memoryLevel,
       'levels.mobility': mobilityLevel,
-      'levels.social': socialLevel
+      'levels.social': socialLevel,
+      'levels.attention': attentionLevel
     });
 
     res.status(200).json({ success: true, plan });

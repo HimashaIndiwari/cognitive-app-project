@@ -8,6 +8,7 @@ const MemoryQuiz = () => {
     const [memoryAnswer, setMemoryAnswer] = useState('');
     const [mobilityAnswer, setMobilityAnswer] = useState('');
     const [socialAnswer, setSocialAnswer] = useState('');
+    const [attentionAnswer, setAttentionAnswer] = useState('');
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -23,12 +24,16 @@ const MemoryQuiz = () => {
             alert("Please select an option.");
             return;
         }
+        if (step === 3 && !socialAnswer) {
+            alert("Please select an option.");
+            return;
+        }
         setStep(step + 1);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!socialAnswer) {
+        if (!attentionAnswer) {
             alert("Please select an option.");
             return;
         }
@@ -47,7 +52,8 @@ const MemoryQuiz = () => {
             const payload = {
                 memoryAnswer,
                 mobilityAnswer,
-                socialAnswer
+                socialAnswer,
+                attentionAnswer
             };
 
             const res = await axios.post('http://localhost:5000/api/quiz/memory-quiz', payload, config);
@@ -86,17 +92,19 @@ const MemoryQuiz = () => {
                         {step === 1 && "Memory Assessment"}
                         {step === 2 && "Physical Mobility"}
                         {step === 3 && "Social Interaction"}
+                        {step === 4 && "Attention & Focus"}
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         {step === 1 && "How often do you find it difficult to remember what day of the week it is?"}
                         {step === 2 && "Which best describes your physical activity level today?"}
                         {step === 3 && "In a typical week, how many people do you talk to outside of your home?"}
+                        {step === 4 && "If you are reading a book or newspaper, how long can you focus before feeling tired?"}
                     </p>
                 </div>
 
                 {error && <div className="text-red-500 text-center">{error}</div>}
 
-                <form className="mt-8 space-y-6" onSubmit={step < 3 ? handleNext : handleSubmit}>
+                <form className="mt-8 space-y-6" onSubmit={step < 4 ? handleNext : handleSubmit}>
                     <div className="space-y-4">
                         {step === 1 && (
                             // STEP 1: MEMORY OPTIONS
@@ -163,6 +171,28 @@ const MemoryQuiz = () => {
                                 </div>
                             </>
                         )}
+
+                        {step === 4 && (
+                            // STEP 4: ATTENTION OPTIONS
+                            <>
+                                <div className="flex items-center">
+                                    <input id="att_a" name="attention" type="radio" value="A" onChange={(e) => setAttentionAnswer(e.target.value)} checked={attentionAnswer === 'A'} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
+                                    <label htmlFor="att_a" className="ml-3 block text-sm font-medium text-gray-700">A) More than 30 minutes. (Level 3)</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input id="att_b" name="attention" type="radio" value="B" onChange={(e) => setAttentionAnswer(e.target.value)} checked={attentionAnswer === 'B'} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
+                                    <label htmlFor="att_b" className="ml-3 block text-sm font-medium text-gray-700">B) Around 15–20 minutes (Level 2)</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input id="att_c" name="attention" type="radio" value="C" onChange={(e) => setAttentionAnswer(e.target.value)} checked={attentionAnswer === 'C'} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
+                                    <label htmlFor="att_c" className="ml-3 block text-sm font-medium text-gray-700">C) Less than 5 minutes. (Level 1)</label>
+                                </div>
+                                <div className="flex items-center">
+                                    <input id="att_d" name="attention" type="radio" value="D" onChange={(e) => setAttentionAnswer(e.target.value)} checked={attentionAnswer === 'D'} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
+                                    <label htmlFor="att_d" className="ml-3 block text-sm font-medium text-gray-700">D) I find it too difficult to read lately.</label>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div>
@@ -171,7 +201,7 @@ const MemoryQuiz = () => {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300"
                         >
-                            {loading ? 'Processing...' : (step < 3 ? 'Next Question' : 'Submit Assessment')}
+                            {loading ? 'Processing...' : (step < 4 ? 'Next Question' : 'Submit Assessment')}
                         </button>
                     </div>
                 </form>
