@@ -72,6 +72,29 @@ const PlanCard = ({ plan, onConfirm }) => {
                 </div>
             </div>
 
+            {/* SOCIAL CARD */}
+            <div className="bg-purple-900 text-white rounded-xl shadow-lg overflow-hidden p-6 relative">
+                {/* Decorative Heart */}
+                <div className="absolute top-4 right-4 text-pink-500 opacity-30">
+                    <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" /></svg>
+                </div>
+
+                <h2 className="text-2xl font-bold mb-1">{plan.social?.title || "Social Connection"}</h2>
+                <h3 className="text-lg text-pink-300 font-semibold mb-6">{plan.social?.subtitle}</h3>
+
+                <div className="bg-pink-50 text-gray-900 rounded-lg p-4 mb-4 border border-pink-100">
+                    <h4 className="font-bold text-gray-800 mb-2">Engagement Plan</h4>
+                    <ul className="space-y-2">
+                        {plan.social?.tasks.map((task, index) => (
+                            <li key={index} className="flex items-center">
+                                <span className="h-2 w-2 bg-pink-500 rounded-full mr-3"></span>
+                                <span className="text-sm font-medium">{task}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
             <div className="mt-8">
                 <button
                     onClick={onConfirm}

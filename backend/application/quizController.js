@@ -103,6 +103,47 @@ exports.submitMemoryQuiz = async (req, res) => {
       ];
     }
 
+    // --- SOCIAL LOGIC ---
+    const { socialAnswer } = req.body;
+    let socialLevel = 1;
+    let socialTitle = "Socially Isolated";
+    let socialTasks = [];
+
+    if (socialAnswer === 'A') {
+      socialLevel = 3;
+      socialTitle = "🟢 Level 3 – Highly Social";
+      socialTasks = [
+        "Activity: 🗣 Join a Group Conversation or Community Activity (30 mins)",
+        "Action: Participate in a temple group, community meeting, or group chat",
+        "Purpose: Maintain strong communication skills, Boost confidence, Prevent loneliness"
+      ];
+    } else if (socialAnswer === 'B') {
+      socialLevel = 2;
+      socialTitle = "🟡 Level 2 – Moderately Social";
+      socialTasks = [
+        "Activity: 📞 Call or Visit One Friend This Week",
+        "Action: Make one scheduled phone call to a friend or neighbor",
+        "Purpose: Maintain social bonds, Encourage regular communication"
+      ];
+    } else if (socialAnswer === 'C') {
+      socialLevel = 1;
+      socialTitle = "🟠 Level 1 – Low Social Interaction";
+      socialTasks = [
+        "Activity: 💬 Talk for 10 Minutes with a Family Member",
+        "Action: Have a short conversation at home about daily events",
+        "Purpose: Improve emotional connection, Reduce isolation"
+      ];
+    } else {
+      // D or undefined
+      socialLevel = 1;
+      socialTitle = "🔴 High Support – Isolated";
+      socialTasks = [
+        "Activity: 📱 Scheduled “Call Family” Reminder (With Support)",
+        "Action: System sends reminder: “Call your daughter at 5 PM.”",
+        "Purpose: Reduce loneliness, Improve emotional well-being, Increase sense of connection"
+      ];
+    }
+
     // Construct the Combined Plan
     const plan = {
       date: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
@@ -119,13 +160,21 @@ exports.submitMemoryQuiz = async (req, res) => {
         subtitle: `Support Level: ${mobilityTitle}`,
         tasks: mobilityTasks,
         color: "bg-slate-900"
+      },
+      social: {
+        level: socialLevel,
+        title: "Daily Social Connection",
+        subtitle: `Social Level: ${socialTitle}`,
+        tasks: socialTasks,
+        color: "bg-purple-900"
       }
     };
 
     // Update User's Levels
     await User.findByIdAndUpdate(userId, {
       'levels.memory': memoryLevel,
-      'levels.mobility': mobilityLevel
+      'levels.mobility': mobilityLevel,
+      'levels.social': socialLevel
     });
 
     res.status(200).json({ success: true, plan });
